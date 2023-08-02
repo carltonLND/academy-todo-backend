@@ -7,7 +7,8 @@ import {
   getAllDbItems,
   getDbItemById,
   DbItem,
-  updateDbItemById,
+  // updateDbItemById,
+  deleteDbItemById,
 } from "./db";
 import filePath from "./filePath";
 
@@ -61,23 +62,23 @@ app.get<{ id: string }>("/tasks/:id", (req, res) => {
 
 // DELETE /tasks/:id
 app.delete<{ id: string }>("/tasks/:id", (req, res) => {
-  const matchingSignature = getDbItemById(parseInt(req.params.id));
+  const matchingSignature = deleteDbItemById(parseInt(req.params.id));
   if (matchingSignature === "not found") {
     res.status(404).json(matchingSignature);
   } else {
-    res.status(200).json(matchingSignature);
+    res.status(202).json(matchingSignature);
   }
 });
 
 // PATCH /tasks/:id
-app.patch<{ id: string }, {}, Partial<DbItem>>("/tasks/:id", (req, res) => {
-  const matchingSignature = updateDbItemById(parseInt(req.params.id), req.body);
-  if (matchingSignature === "not found") {
-    res.status(404).json(matchingSignature);
-  } else {
-    res.status(200).json(matchingSignature);
-  }
-});
+// app.patch<{ id: string }, {}, Partial<DbItem>>("/tasks/:id", (req, res) => {
+//   const matchingSignature = updateDbItemById(parseInt(req.params.id), req.body);
+//   if (matchingSignature === "not found") {
+//     res.status(404).json(matchingSignature);
+//   } else {
+//     res.status(200).json(matchingSignature);
+//   }
+// });
 
 app.listen(PORT_NUMBER, () => {
   console.log(`Server is listening on port ${PORT_NUMBER}!`);
