@@ -2,7 +2,7 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import {
-  addDummyDbItems,
+  // addDummyDbItems,
   addDbItem,
   getAllDbItems,
   getDbItemById,
@@ -14,7 +14,7 @@ import filePath from "./filePath";
 
 // loading in some dummy items into the database
 // (comment out if desired, or change the number)
-addDummyDbItems(10);
+// addDummyDbItems(10);
 
 const app = express();
 
