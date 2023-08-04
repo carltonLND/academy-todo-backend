@@ -2,7 +2,6 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import {
-  // addDummyDbItems,
   addDbItem,
   getAllDbItems,
   getDbItemById,
@@ -12,45 +11,31 @@ import {
 } from "./db";
 import filePath from "./filePath";
 
-// loading in some dummy items into the database
-// (comment out if desired, or change the number)
-// addDummyDbItems(10);
-
 const app = express();
 
-/** Parses JSON data in a request automatically */
 app.use(express.json());
-/** To allow 'Cross-Origin Resource Sharing': https://en.wikipedia.org/wiki/Cross-origin_resource_sharing */
 app.use(cors());
 
-// read in contents of any environment variables in the .env file
 dotenv.config();
 
-// use the environment variable PORT, or 4000 as a fallback
 const PORT_NUMBER = process.env.PORT ?? 4000;
 
-// API info page
 app.get("/", (req, res) => {
   const pathToFile = filePath("../public/index.html");
   res.sendFile(pathToFile);
 });
 
-// GET /tasks
 app.get("/tasks", (req, res) => {
   const allSignatures = getAllDbItems();
   res.status(200).json(allSignatures);
 });
 
-// POST /tasks
 app.post<{}, {}, DbItem>("/tasks", (req, res) => {
-  // to be rigorous, ought to handle non-conforming request bodies
-  // ... but omitting this as a simplification
   const postData = req.body;
   const createdSignature = addDbItem(postData);
   res.status(201).json(createdSignature);
 });
 
-// GET /tasks/:id
 app.get<{ id: string }>("/tasks/:id", (req, res) => {
   const matchingSignature = getDbItemById(parseInt(req.params.id));
   if (matchingSignature === "not found") {
@@ -60,7 +45,6 @@ app.get<{ id: string }>("/tasks/:id", (req, res) => {
   }
 });
 
-// DELETE /tasks/:id
 app.delete<{ id: string }>("/tasks/:id", (req, res) => {
   const matchingSignature = deleteDbItemById(parseInt(req.params.id));
   if (matchingSignature === "not found") {
@@ -70,7 +54,6 @@ app.delete<{ id: string }>("/tasks/:id", (req, res) => {
   }
 });
 
-// PATCH /tasks/:id
 // app.patch<{ id: string }, {}, Partial<DbItem>>("/tasks/:id", (req, res) => {
 //   const matchingSignature = updateDbItemById(parseInt(req.params.id), req.body);
 //   if (matchingSignature === "not found") {
