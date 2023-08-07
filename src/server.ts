@@ -20,46 +20,46 @@ dotenv.config();
 
 const PORT_NUMBER = process.env.PORT ?? 4000;
 
-app.get("/", (req, res) => {
+app.get("/", (_, res) => {
   const pathToFile = filePath("../public/index.html");
   res.sendFile(pathToFile);
 });
 
-app.get("/tasks", (req, res) => {
-  const allSignatures = getAllDbItems();
-  res.status(200).json(allSignatures);
+app.get("/tasks", (_, res) => {
+  const allTasks = getAllDbItems();
+  res.status(200).json(allTasks);
 });
 
 app.post<{}, {}, DbItem>("/tasks", (req, res) => {
   const postData = req.body;
-  const createdSignature = addDbItem(postData);
-  res.status(201).json(createdSignature);
+  const createdTask = addDbItem(postData);
+  res.status(201).json(createdTask);
 });
 
 app.get<{ id: string }>("/tasks/:id", (req, res) => {
-  const matchingSignature = getDbItemById(parseInt(req.params.id));
-  if (matchingSignature === "not found") {
-    res.status(404).json(matchingSignature);
+  const matchingTask = getDbItemById(parseInt(req.params.id));
+  if (matchingTask === "not found") {
+    res.status(404).json(matchingTask);
   } else {
-    res.status(200).json(matchingSignature);
+    res.status(200).json(matchingTask);
   }
 });
 
 app.delete<{ id: string }>("/tasks/:id", (req, res) => {
-  const matchingSignature = deleteDbItemById(parseInt(req.params.id));
-  if (matchingSignature === "not found") {
-    res.status(404).json(matchingSignature);
+  const matchingTask = deleteDbItemById(parseInt(req.params.id));
+  if (matchingTask === "not found") {
+    res.status(404).json(matchingTask);
   } else {
-    res.status(202).json(matchingSignature);
+    res.status(202).json(matchingTask);
   }
 });
 
 // app.patch<{ id: string }, {}, Partial<DbItem>>("/tasks/:id", (req, res) => {
-//   const matchingSignature = updateDbItemById(parseInt(req.params.id), req.body);
-//   if (matchingSignature === "not found") {
-//     res.status(404).json(matchingSignature);
+//   const matchingTask = updateDbItemById(parseInt(req.params.id), req.body);
+//   if (matchingTask === "not found") {
+//     res.status(404).json(matchingTask);
 //   } else {
-//     res.status(200).json(matchingSignature);
+//     res.status(200).json(matchingTask);
 //   }
 // });
 
