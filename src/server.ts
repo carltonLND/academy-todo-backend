@@ -1,14 +1,7 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import {
-  addDbItem,
-  getAllDbItems,
-  getDbItemById,
-  DbItem,
-  // updateDbItemById,
-  deleteDbItemById,
-} from "./db";
+import { useTasksDbAPI, TaskCandidate } from "./db";
 import filePath from "./filePath";
 
 const app = express();
@@ -18,26 +11,29 @@ app.use(cors());
 
 dotenv.config();
 
+const DATABASE_URI = process.env.DATABASE_URI ?? "";
 const PORT_NUMBER = process.env.PORT ?? 4000;
+
+const taskAPI = useTasksDbAPI(DATABASE_URI);
 
 app.get("/", (_, res) => {
   const pathToFile = filePath("../public/index.html");
   res.sendFile(pathToFile);
 });
 
-app.get("/tasks", (_, res) => {
-  const allTasks = getAllDbItems();
+app.get("/tasks", async (_, res) => {
+  const allTasks = await taskAPI.getTasks();
   res.status(200).json(allTasks);
 });
 
-app.post<{}, {}, DbItem>("/tasks", (req, res) => {
+app.post<{}, {}, TaskCandidate>("/tasks", async (req, res) => {
   const postData = req.body;
-  const createdTask = addDbItem(postData);
+  const createdTask = await taskAPI.addTask(postData);
   res.status(201).json(createdTask);
 });
 
-app.get<{ id: string }>("/tasks/:id", (req, res) => {
-  const matchingTask = getDbItemById(parseInt(req.params.id));
+app.get<{ id: string }>("/tasks/:id", async (req, res) => {
+  const matchingTask = await taskAPI.getOneTask(parseInt(req.params.id));
   if (matchingTask === "not found") {
     res.status(404).json(matchingTask);
   } else {
@@ -45,8 +41,8 @@ app.get<{ id: string }>("/tasks/:id", (req, res) => {
   }
 });
 
-app.delete<{ id: string }>("/tasks/:id", (req, res) => {
-  const matchingTask = deleteDbItemById(parseInt(req.params.id));
+app.delete<{ id: string }>("/tasks/:id", async (req, res) => {
+  const matchingTask = await taskAPI.deleteTask(parseInt(req.params.id));
   if (matchingTask === "not found") {
     res.status(404).json(matchingTask);
   } else {
