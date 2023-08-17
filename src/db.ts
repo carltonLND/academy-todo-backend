@@ -16,12 +16,14 @@ interface TasksDbAPI {
   editTask: (id: number, task: TaskCandidate) => Promise<Task | "not found">;
 }
 
-export function useTasksDbAPI(connectionString: string): TasksDbAPI {
+export async function useTasksDbAPI(
+  connectionString: string
+): Promise<TasksDbAPI> {
   const client = new Client({
     connectionString,
   });
 
-  client.connect(); // TODO: API functions may be invoked before client is connected
+  await client.connect(); // TODO: API functions may be invoked before client is connected
 
   async function getTasks(): Promise<Task[]> {
     const queryResult = await client.query("SELECT * FROM tasks LIMIT 100");
