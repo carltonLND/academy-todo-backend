@@ -23,7 +23,7 @@ export async function useTasksDbAPI(
     connectionString,
   });
 
-  await client.connect(); // TODO: API functions may be invoked before client is connected
+  await client.connect();
 
   async function getTasks(): Promise<Task[]> {
     const queryResult = await client.query("SELECT * FROM tasks LIMIT 100");
