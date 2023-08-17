@@ -13,6 +13,7 @@ interface TasksDbAPI {
   getOneTask: (id: number) => Promise<Task | "not found">;
   addTask: (task: TaskCandidate) => Promise<Task>;
   deleteTask: (id: number) => Promise<"success" | "not found">;
+  editTask: (id: number, task: TaskCandidate) => Promise<Task | "not found">;
 }
 
 export function useTasksDbAPI(connectionString: string): TasksDbAPI {
@@ -50,5 +51,17 @@ export function useTasksDbAPI(connectionString: string): TasksDbAPI {
     return queryResult.rowCount === 1 ? "success" : "not found";
   }
 
-  return { getTasks, getOneTask, addTask, deleteTask };
+  async function editTask(
+    id: number,
+    task: TaskCandidate
+  ): Promise<Task | "not found"> {
+    const queryResult = await client.query(
+      "UPDATE tasks SET content = $2 WHERE id = $1 RETURNING *",
+      [id, task.content]
+    );
+
+    return queryResult.rowCount === 1 ? queryResult.rows[0] : "not found";
+  }
+
+  return { getTasks, getOneTask, addTask, deleteTask, editTask };
 }

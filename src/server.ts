@@ -50,14 +50,17 @@ app.delete<{ id: string }>("/tasks/:id", async (req, res) => {
   }
 });
 
-// app.patch<{ id: string }, {}, Partial<DbItem>>("/tasks/:id", (req, res) => {
-//   const matchingTask = updateDbItemById(parseInt(req.params.id), req.body);
-//   if (matchingTask === "not found") {
-//     res.status(404).json(matchingTask);
-//   } else {
-//     res.status(200).json(matchingTask);
-//   }
-// });
+app.put<{ id: string }, {}, TaskCandidate>("/tasks/:id", async (req, res) => {
+  const matchingTask = await taskAPI.editTask(
+    parseInt(req.params.id),
+    req.body
+  );
+  if (matchingTask === "not found") {
+    res.status(404).json(matchingTask);
+  } else {
+    res.status(200).json(matchingTask);
+  }
+});
 
 app.listen(PORT_NUMBER, () => {
   console.log(`Server is listening on port ${PORT_NUMBER}!`);
